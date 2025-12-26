@@ -1,0 +1,6 @@
+dependency_overrides:
+  searchfield:
+    git:
+      url: https://github.com/iamtoricool/searchfield.git
+      ref: fix-issue-248
+  hugeicons: ^0.0.11 # using old version of `hugeicons` cause from 1.0.0 made breaking changes which is not compitable with this project
