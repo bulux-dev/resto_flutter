@@ -8,6 +8,7 @@ Future<void> refreshTopSalesData() async {
 
 /// Provider que obtiene las categorías más populares basándose en la cantidad de productos disponibles
 final topSellingCategoriesProvider = FutureProvider.autoDispose<List<TopSellingCategory>>((ref) async {
+  
   try {
     // 💾 Intentar cargar desde cache persistente primero
     await _loadCacheFromStorage();
@@ -82,12 +83,6 @@ final topSellingCategoriesProvider = FutureProvider.autoDispose<List<TopSellingC
       ));
     }
     
-    // 📊 DEBUG: Log de resultados para verificación
-    print('🔥 TOP CATEGORÍAS POR VENTAS:');
-    for (int i = 0; i < topCategories.length; i++) {
-      final cat = topCategories[i];
-      print('  ${i + 1}. ${cat.category.categoryName}: ${cat.totalSold} vendidos');
-    }
 
     return topCategories;
   } catch (e) {
