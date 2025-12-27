@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Models\Modifier;
-use App\Models\Scopes\DataManager;
+// use App\Models\Scopes\DataManager; // Commented out to allow all users to view all products
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -34,10 +34,12 @@ class Product extends Model
         'meta',
     ];
 
-    protected static function booted()
-    {
-        static::addGlobalScope(new DataManager('products.view-all-data'));
-    }
+    // Removed global scope to allow all users in the same business to view all products
+    // regardless of who created them
+    // protected static function booted()
+    // {
+    //     static::addGlobalScope(new DataManager('products.view-all-data'));
+    // }
 
     public function variations()
     {

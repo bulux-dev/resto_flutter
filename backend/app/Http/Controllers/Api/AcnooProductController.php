@@ -130,6 +130,7 @@ class AcnooProductController extends Controller
                         'modifiers:id,product_id,modifier_group_id,is_required,is_multiple',
                         'modifiers.modifier_group:id,name',
                         'modifiers.modifier_group.modifier_group_option:id,modifier_group_id,is_available,name,price')
+                        ->where('business_id', auth()->user()->business_id)
                         ->findOrFail($id);
 
         return response()->json([
@@ -140,6 +141,13 @@ class AcnooProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
+        // Ensure the product belongs to the user's business
+        if ($product->business_id != auth()->user()->business_id) {
+            return response()->json([
+                'message' => __('Unauthorized.'),
+            ], 403);
+        }
+
         $business_id = auth()->user()->business_id;
 
         $request->validate([
@@ -224,6 +232,13 @@ class AcnooProductController extends Controller
 
     public function destroy(Product $product)
     {
+        // Ensure the product belongs to the user's business
+        if ($product->business_id != auth()->user()->business_id) {
+            return response()->json([
+                'message' => __('Unauthorized.'),
+            ], 403);
+        }
+
         foreach ($product->images ?? [] as $image) {
             if (Storage::exists($image)) {
                 Storage::delete($image);
