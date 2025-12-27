@@ -83,6 +83,12 @@ final topSellingCategoriesProvider = FutureProvider.autoDispose<List<TopSellingC
       ));
     }
     
+    // 📊 DEBUG: Log de resultados para verificación
+    print('🔥 TOP CATEGORÍAS POR VENTAS:');
+    for (int i = 0; i < topCategories.length; i++) {
+      final cat = topCategories[i];
+      print('  ${i + 1}. ${cat.category.categoryName}: ${cat.totalSold} vendidos');
+    }
 
     return topCategories;
   } catch (e) {
