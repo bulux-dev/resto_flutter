@@ -26,13 +26,13 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        $users = User::whereNotIn('role', ['superadmin','shop-owner'])->latest()->paginate(10);
+        $users = User::whereNotIn('role', ['superadmin','shop-owner','staff'])->latest()->paginate(10);
         return view('admin.users.index', compact('users'));
     }
 
     public function acnooFilter(Request $request)
     {
-        $users = User::whereNotIn('role', ['superadmin', 'staff', 'Staff','STAFF', 'shop-owner'])->when(request('search'), function ($q) {
+        $users = User::whereNotIn('role', ['superadmin', 'staff','shop-owner'])->when(request('search'), function ($q) {
             $q->where(function ($q) {
                 $q->where('name', 'like', '%' . request('search') . '%')
                     ->orWhere('email', 'like', '%' . request('search') . '%')
@@ -87,7 +87,7 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        if ($user->role == 'superadmin' || $user->role == 'Staff' || $user->role == 'STAFF' || $user->role == 'staff') {
+        if ($user->role == 'superadmin') {
             abort(403);
         }
         $roles = Role::where('name', '!=', ['superadmin','staff','Staff','STAFF'])->latest()->get();
@@ -96,7 +96,7 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        if ($user->role == 'superadmin' || $user->role == 'Staff' || $user->role == 'STAFF' || $user->role == 'staff') {
+        if ($user->role == 'superadmin') {
             return response()->json(__('You can not update a superadmin.'), 400);
         }
         $request->validate([
