@@ -19,12 +19,7 @@ class AcnooSaleController extends Controller
     public function index()
     {
         $data = Sale::select('id', 'party_id', 'payment_type_id', 'invoiceNumber', 'saleDate', 'totalAmount', 'paidAmount', 'dueAmount', 'status')
-            ->with(
-                'party:id,name,phone',
-                'payment_type:id,name',
-                'kot_ticket:id,table_id',
-                'kot_ticket.table:id,name'
-            )
+                ->with('party:id,name,phone', 'payment_type:id,name')
                 ->when(request('search'), function ($query) {
                     $query->where(function ($subQuery) {
                         $subQuery->where('invoiceNumber', 'like', '%' . request('search') . '%')
@@ -322,22 +317,23 @@ class AcnooSaleController extends Controller
                 'tax:id,name,rate',
                 'party:id,name,phone',
                 'payment_type:id,name',
-                'kot_ticket:id,table_id',
-                'kot_ticket.table:id,name',
                 'details:id,sale_id,product_id,variation_id,price,quantities,instructions',
-                'details.product:id,productName,sales_price,price_type,images',
+                'details.product:id,productName,sales_price,price_type',
                 'details.variation:id,name,price',
                 'details.detail_options:id,sale_detail_id,option_id,modifier_id',
                 'details.detail_options.modifier_group_option:id,name,price',
             ]);
 
-            // Return sale array including kot_ticket with nested table so frontend can map it
-            $responseData = $sale->toArray();
+             // If kot_ticket exists, extract the table_id directly
+             $responseData = [
+                'table_id' => $table_id,
+            ] + $sale->toArray();
 
             return response()->json([
-                'message' => __('Data saved successfully.'),
+                'message' => 'Payment received successfully and KOT finalized.',
                 'data' => $responseData
             ]);
+
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
@@ -356,7 +352,6 @@ class AcnooSaleController extends Controller
                     'delivery_address:id,name,phone,address',
                     'payment_type:id,name',
                     'kot_ticket:id,table_id',
-                    'kot_ticket.table:id,name',
                     'details:id,sale_id,product_id,variation_id,price,quantities,instructions',
                     'details.product:id,productName,sales_price,price_type,images',
                     'details.variation:id,name,price',
@@ -366,8 +361,11 @@ class AcnooSaleController extends Controller
                 ->findOrFail($id);
 
 
-                // Return sale array including kot_ticket.table so frontend can map to kotTable
-                $responseData = $sale->toArray();
+                // If kot_ticket exists, extract the table_id directly
+                $responseData = [
+                    'table_id' => $sale?->kot_ticket?->table_id,
+                ] + $sale->toArray();
+                unset($responseData['kot_ticket']);
 
                 return response()->json([
                     'message' => __('Data saved successfully.'),
@@ -496,7 +494,6 @@ class AcnooSaleController extends Controller
                 'party:id,name,phone',
                 'payment_type:id,name',
                 'kot_ticket:id,table_id',
-                'kot_ticket.table:id,name',
                 'details:id,sale_id,product_id,variation_id,price,quantities,instructions',
                 'details.product:id,productName,sales_price,price_type,images',
                 'details.variation:id,name,price',
@@ -504,8 +501,12 @@ class AcnooSaleController extends Controller
                 'details.detail_options.modifier_group_option:id,name,price',
             ]);
 
-            // Return sale array including kot_ticket.table so frontend receives the table name
-            $responseData = $sale->toArray();
+            // If kot_ticket exists, extract the table_id directly
+            $responseData = [
+                'table_id' => $sale?->kot_ticket?->table_id,
+            ] + $sale->toArray();
+
+            unset($responseData['kot_ticket']);
 
             return response()->json([
                 'message' => __('Data saved successfully.'),
@@ -544,26 +545,13 @@ class AcnooSaleController extends Controller
             $kot->delete();
         }
 
-            $sale->load([
-                'coupon',
-                'tax:id,name,rate',
-                'party:id,name,phone',
-                'payment_type:id,name',
-                'kot_ticket:id,table_id',
-                'kot_ticket.table:id,name',
-                'details:id,sale_id,product_id,variation_id,price,quantities,instructions',
-                'details.product:id,productName,sales_price,price_type',
-                'details.variation:id,name,price',
-                'details.detail_options:id,sale_detail_id,option_id,modifier_id',
-                'details.detail_options.modifier_group_option:id,name,price',
-            ]);
+        $sale->delete();
 
-             // Merge kot_ticket.table into sale->toArray() so frontend receives table info
-             $responseData = $sale->toArray();
-             // include final table_id if available
-             $responseData['table_id'] = $table_id;
-
-            return response()->json([
-                'message' => 'Payment received successfully and KOT finalized.',
-                'data' => $responseData
-            ]);
+        return response()->json([
+            'message' => __('Data deleted successfully.'),
+            'data' => [
+            'table_id' => $table_id,
+           ],
+        ]);
+    }
+}
