@@ -108,6 +108,25 @@ class SalePurchaseThermalInvoicePreview extends ConsumerWidget {
             ),
           ),
 
+          // Table (Mesa)
+          if (_data.table != null)
+            Text.rich(
+              TextSpan(
+                text: '${t.common.table}: ',
+                children: [
+                  TextSpan(
+                    text: ' ${_data.table?.name ?? "N/A"}',
+                    style: TextStyle(
+                      color: _theme.colorScheme.onPrimaryContainer,
+                    ),
+                  ),
+                ],
+                style: _theme.textTheme.bodyLarge?.copyWith(
+                  color: _theme.colorScheme.secondary,
+                ),
+              ),
+            ),
+
           // Party Name
           if (_data.party != null) ...[
             Text.rich(

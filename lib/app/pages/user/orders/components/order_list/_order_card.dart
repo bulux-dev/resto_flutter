@@ -61,6 +61,18 @@ class OrderCard extends StatelessWidget {
                       textAlign: TextAlign.end,
                       style: _cTextStyle,
                     ),
+                    const SizedBox.square(dimension: 4),
+
+                    // Table Number (if available)
+                    if (cardData.tableNumber != null)
+                      Text(
+                        '${t.common.table}: ${cardData.tableNumber}',
+                        style: _cTextStyle?.copyWith(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: _theme.colorScheme.primary,
+                        ),
+                      ),
                   ],
                 ),
               ),

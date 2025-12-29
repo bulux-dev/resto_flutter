@@ -153,6 +153,7 @@ class _OrderListWidgetState extends ConsumerState<OrderListWidget> with Paginate
                         : sale.dueAmount == 0
                             ? (sale.totalAmount ?? 0) - (sale.dueAmount ?? 0)
                             : (sale.dueAmount ?? 0),
+                    tableNumber: sale.kotTable?.name,
                   );
                   return OrderCard(
                     cardData: _cardData,

@@ -11,6 +11,9 @@ import '../../../../data/repository/repository.dart';
 
 part '_purchase_list_view_provider.dart';
 
+// Selected table for the purchase list (single table for whole view)
+final purchaseListTableProvider = StateProvider<int?>((ref) => null);
+
 @RoutePage()
 class PurchaseListView extends ConsumerWidget {
   const PurchaseListView({super.key});
@@ -74,6 +77,64 @@ class PurchaseListView extends ConsumerWidget {
             ),
           ).fMarginLTRB(16, 16, 16, 0),
 
+          // Table selector for the entire order list
+          Consumer(
+            builder: (context, ref, _) {
+              final _tableListAsync = ref.watch(tableDropdownProvider);
+              final _selectedTable = ref.watch(purchaseListTableProvider);
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: _tableListAsync.when(
+                  data: (tables) {
+                    return AsyncCustomDropdown<int, TableList>(
+                      asyncData: _tableListAsync,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (_) => _selectedTable == null ? t.common.required : null,
+                      decoration: InputDecoration(
+                        labelText: t.common.table,
+                        hintText: t.form.sales.table.hint,
+                        isDense: true,
+                      ),
+                      value: _selectedTable,
+                      items: [
+                        CustomDropdownMenuItem.navigator(
+                          label: '#',
+                          navLabel: '+ ${t.common.addNew}',
+                          onNavTap: () async {
+                            if (ref.canSnackbar(context, PMKeys.tables, action: PermissionAction.create)) {
+                              return await context.router.push<void>(
+                                TableListRoute(),
+                              );
+                            }
+                          },
+                        ),
+                        ...?tables.data?.data?.map((table) {
+                          return CustomDropdownMenuItem(
+                            value: table.id,
+                            enabled: table.status.isEmpty,
+                            label: TextSpan(text: table.name ?? 'N/A'),
+                          );
+                        }),
+                      ],
+                      onChanged: (value) {
+                        ref.read(purchaseListTableProvider.notifier).state = value;
+                        final _tableName = tables.data?.data?.firstWhereOrNull((t) => t.id == value)?.name;
+                        showCustomSnackBar(
+                          context,
+                          content: Text('${t.common.table}: ${_tableName ?? 'N/A'}'),
+                        );
+                      },
+                      onRefresh: () => ref.refresh(tableDropdownProvider),
+                    );
+                  },
+                  loading: () => const SizedBox.shrink(),
+                  error: (_, __) => const SizedBox.shrink(),
+                ),
+              );
+            },
+          ),
+
           // Transaction List
           Expanded(
             child: RefreshIndicator.adaptive(
@@ -88,6 +149,12 @@ class PurchaseListView extends ConsumerWidget {
                 builderDelegate: PagedChildBuilderDelegate<Purchase>(
                   itemBuilder: (c, purchase, i) {
                     final _hasDue = (purchase.dueAmount ?? 0) > 0;
+                    // Selected table for display on each purchase card
+                    final _selectedTableId = ref.watch(purchaseListTableProvider);
+                    final _tableListAsync = ref.watch(tableDropdownProvider);
+                    final _selectedTableName = _selectedTableId == null
+                      ? null
+                      : _tableListAsync.asData?.value.data?.data?.firstWhereOrNull((t) => t.id == _selectedTableId)?.name;
 
                     final _cardData = TransactionCardData(
                       cardType: TransactionCardType.purchaseList(
@@ -98,6 +165,7 @@ class PurchaseListView extends ConsumerWidget {
                       primaryValue: purchase.totalAmount ?? 0,
                       secondaryValue: (_hasDue ? purchase.dueAmount : purchase.paidAmount) ?? 0,
                       transactionDate: purchase.purchaseDate,
+                      tableNumber: _selectedTableName,
                     );
 
                     return TransactionCard(
@@ -159,6 +227,16 @@ class PurchaseListView extends ConsumerWidget {
         height: 48,
         child: FloatingActionButton.extended(
           onPressed: () async {
+            final _selected = ref.read(purchaseListTableProvider);
+            if (_selected == null) {
+              showCustomSnackBar(
+                context,
+                content: Text('${t.common.table} ${t.common.required}'),
+                customSnackBarType: CustomOverlayType.error,
+              );
+              return;
+            }
+
             if (ref.canSnackbar(context, PMKeys.purchases, action: PermissionAction.create)) {
               return await context.router.push<void>(
                 ManagePurchaseRoute(),

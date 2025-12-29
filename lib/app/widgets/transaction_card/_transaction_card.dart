@@ -64,6 +64,17 @@ class TransactionCard extends StatelessWidget {
                         textAlign: TextAlign.end,
                         style: _cTextStyle,
                       ),
+                      if (cardData.tableNumber != null) ...[
+                        const SizedBox.square(dimension: 4),
+                        Text.rich(
+                          TextSpan(
+                            text: '${t.common.table}: ',
+                            children: [TextSpan(text: cardData.tableNumber ?? 'N/A')],
+                          ),
+                          textAlign: TextAlign.end,
+                          style: _cTextStyle,
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -192,6 +203,7 @@ class TransactionCardData {
   final int decimalDigits;
   final num primaryValue;
   final num secondaryValue;
+  final String? tableNumber;
 
   const TransactionCardData({
     required this.cardType,
@@ -202,6 +214,7 @@ class TransactionCardData {
     this.decimalDigits = 2,
     this.primaryValue = 0.0,
     this.secondaryValue = 0.0,
+    this.tableNumber,
   });
 }
 
