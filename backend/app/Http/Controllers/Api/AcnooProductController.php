@@ -44,8 +44,28 @@ class AcnooProductController extends Controller
                 ->latest();
 
                 if (request('no_paginate') && request('no_paginate') == true) {
-                    $data = Product::select('id', 'business_id', 'productName', 'category_id')
+                    $data = Product::with('menu:id,name', 'category:id,categoryName', 'variations:product_id,id,name,price')
                             ->where('business_id', $businessId)
+                            ->when(request('search'), function ($query) {
+                                $query->where('productName', 'like', '%' . request('search') . '%');
+                            })
+                            ->when(request('category_id'), function ($query) {
+                                $query->where('category_id', request('category_id'));
+                            })
+                            ->when(request('menu_id'), function ($query) {
+                                $query->where('menu_id', request('menu_id'));
+                            })
+                            ->when(request('food_type'), function ($query) {
+                                $query->where('food_type', request('food_type'));
+                            })
+                            ->when(request('sort_by'), function ($query) {
+                                if (request('sort_by') == 'low_to_high') {
+                                    $query->orderBy('sales_price', 'asc');
+                                } elseif (request('sort_by') == 'high_to_low') {
+                                    $query->orderBy('sales_price', 'desc');
+                                }
+                            })
+                            ->latest()
                             ->get();
                     $responseData = [
                         'data' => $data,
@@ -81,7 +101,6 @@ class AcnooProductController extends Controller
         try {
             $product = Product::create($request->except('business_id', 'sales_price', 'images') +[
                 'business_id' => $business_id,
-                'user_id' => auth()->id(),
                 'sales_price' => $request->price_type === 'single' ? $request->sales_price : 0,
                 'images' => $request->images ? $this->multipleUpload($request, 'images') : NULL
             ]);
@@ -189,7 +208,6 @@ class AcnooProductController extends Controller
 
             $product->update($request->except('business_id', 'sales_price', 'images') +[
                 'business_id' => $business_id,
-                'user_id' => auth()->id(),
                 'sales_price' => $request->price_type === 'single' ? $request->sales_price : 0,
                 'images' => $merged_images
             ]);
