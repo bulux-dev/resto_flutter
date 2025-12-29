@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use App\Models\Scopes\DataManager; // Commented out to allow all users to view all parties
+use App\Models\Scopes\DataManager;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -31,12 +31,9 @@ class Party extends Model
         'notes',
     ];
 
-    // Removed global scope to allow all users in the same business to view all parties
-    // regardless of who created them
     protected static function booted()
     {
-        // Intentionally empty - no global scopes applied
-        // This ensures all users can see all parties within their business
+        static::addGlobalScope(new DataManager('parties.view-all-data'));
     }
 
     public function sales() : HasMany

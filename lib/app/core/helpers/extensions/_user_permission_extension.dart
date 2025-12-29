@@ -57,16 +57,6 @@ final canModuleProvider = Provider.family<bool, _CanRequest>((ref, req) {
 
   if (user.isShopOwner) return true;
 
-  // Allow all staff users to view products, categories, and menus (items-related) regardless of permissions
-  // This allows all users to review/browse items and their organization
-  if (req.action == PermissionAction.view) {
-    if (req.moduleKey == 'products' || 
-        req.moduleKey == 'categories' || 
-        req.moduleKey == 'menus') {
-      return true;
-    }
-  }
-
   final permission = user.permissions?.modules[req.moduleKey];
   if (permission == null) return false;
 

@@ -48,25 +48,26 @@ class _CurrencyViewState extends ConsumerState<CurrencyView> {
             child: ValueListenableBuilder(
               valueListenable: selectedLocale,
               builder: (_, selected, __) {
-                return ListView.separated(
-                  padding: const EdgeInsetsDirectional.symmetric(vertical: 8),
-                  itemCount: data.data?.length ?? 0,
-                  itemBuilder: (_, index) {
-                    final _item = [...?data.data][index];
+                return RadioGroup(
+                  groupValue: selected,
+                  onChanged: (value) {
+                    selectedLocale.value = value!;
+                  },
+                  child: ListView.separated(
+                    padding: const EdgeInsetsDirectional.symmetric(vertical: 8),
+                    itemCount: data.data?.length ?? 0,
+                    itemBuilder: (_, index) {
+                      final _item = [...?data.data][index];
 
-                    return DecoratedBox(
-                      decoration: BoxDecoration(
-                        border: BorderDirectional(
-                          bottom: Divider.createBorderSide(context),
+                      return DecoratedBox(
+                        decoration: BoxDecoration(
+                          border: BorderDirectional(
+                            bottom: Divider.createBorderSide(context),
+                          ),
                         ),
-                      ),
-                      child: RadioListTile<Currency>(
-                        value: _item,
-                        groupValue: selected,
-                        onChanged: (value) {
-                          selectedLocale.value = value!;
-                        },
-                        controlAffinity: ListTileControlAffinity.trailing,
+                        child: RadioListTile<Currency>(
+                          value: _item,
+                          controlAffinity: ListTileControlAffinity.trailing,
                           title: Text.rich(
                             TextSpan(
                               text: '${_item.name ?? 'N/A'} - ',
@@ -94,6 +95,7 @@ class _CurrencyViewState extends ConsumerState<CurrencyView> {
                     separatorBuilder: (_, __) => const SizedBox.square(
                       dimension: 10,
                     ),
+                  ),
                 );
               },
             ),

@@ -61,29 +61,6 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('quotations', Api\AcnooQuotationController::class)->except('edit', 'create');
         Route::apiResource('role-permission', Api\AcnooRolePermissionController::class)->except('create', 'show', 'edit');
 
-        // Debug route to check product visibility
-        Route::get('debug/products', function () {
-            $user = auth()->user();
-            if (!$user) {
-                return response()->json(['error' => 'Not authenticated'], 401);
-            }
-            
-            $allProducts = \App\Models\Product::all(['id', 'productName', 'user_id', 'business_id', 'created_at']);
-            $userBizProducts = \App\Models\Product::where('business_id', $user->business_id)->get(['id', 'productName', 'user_id', 'business_id', 'created_at']);
-            
-            return response()->json([
-                'authenticated_user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'business_id' => $user->business_id,
-                    'role' => $user->role,
-                ],
-                'all_products_count' => $allProducts->count(),
-                'business_products_count' => $userBizProducts->count(),
-                'all_products' => $allProducts,
-                'business_products' => $userBizProducts,
-            ]);
-        });
 
         // Reports
         Route::get('purchase-report', [Api\ReportsController::class, 'purchaseReport']);

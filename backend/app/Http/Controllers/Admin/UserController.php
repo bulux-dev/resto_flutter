@@ -26,13 +26,21 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        $users = User::whereNotIn('role', ['superadmin','shop-owner','staff'])->latest()->paginate(10);
+<<<<<<< HEAD
+        $users = User::whereNotIn('role', ['superadmin', 'staff', 'shop-owner'])->latest()->paginate(10);
+=======
+        $users = User::whereNotIn('role', ['superadmin','shop-owner'])->latest()->paginate(10);
+>>>>>>> parent of e6fa8c1 (changes pending)
         return view('admin.users.index', compact('users'));
     }
 
     public function acnooFilter(Request $request)
     {
-        $users = User::whereNotIn('role', ['superadmin', 'staff','shop-owner'])->when(request('search'), function ($q) {
+<<<<<<< HEAD
+        $users = User::whereNotIn('role', ['superadmin', 'staff', 'shop-owner'])->when(request('search'), function ($q) {
+=======
+        $users = User::whereNotIn('role', ['superadmin', 'staff', 'Staff','STAFF', 'shop-owner'])->when(request('search'), function ($q) {
+>>>>>>> parent of e6fa8c1 (changes pending)
             $q->where(function ($q) {
                 $q->where('name', 'like', '%' . request('search') . '%')
                     ->orWhere('email', 'like', '%' . request('search') . '%')
@@ -54,7 +62,7 @@ class UserController extends Controller
 
     public function create()
     {
-        $roles = Role::where('name', '!=', ['superadmin','staff','Staff','STAFF'])->latest()->get();
+        $roles = Role::where('name', '!=', 'superadmin')->latest()->get();
         return view('admin.users.create', compact('roles'));
     }
 
@@ -87,16 +95,16 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        if ($user->role == 'superadmin') {
+        if ($user->role == 'superadmin' || $user->role == 'Staff' || $user->role == 'STAFF' || $user->role == 'staff') {
             abort(403);
         }
-        $roles = Role::where('name', '!=', ['superadmin','staff','Staff','STAFF'])->latest()->get();
+        $roles = Role::where('name', '!=', 'superadmin')->latest()->get();
         return view('admin.users.edit', compact('user', 'roles'));
     }
 
     public function update(Request $request, User $user)
     {
-        if ($user->role == 'superadmin') {
+        if ($user->role == 'superadmin' || $user->role == 'Staff' || $user->role == 'STAFF' || $user->role == 'staff') {
             return response()->json(__('You can not update a superadmin.'), 400);
         }
         $request->validate([

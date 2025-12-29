@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use App\Models\Scopes\DataManager; // Commented out to allow all users to view all quotations
+use App\Models\Scopes\DataManager;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -33,12 +33,9 @@ class Quotation extends Model
         'meta',
     ];
 
-    // Removed global scope to allow all users in the same business to view all quotations
-    // regardless of who created them
     protected static function booted()
     {
-        // Intentionally empty - no global scopes applied
-        // This ensures all users can see all quotations within their business
+        static::addGlobalScope(new DataManager('quotations.view-all-data'));
     }
 
     public function business()

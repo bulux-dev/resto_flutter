@@ -75,7 +75,7 @@ class PurchasePaymentReceiveView extends ConsumerWidget {
                     filled: true,
                     fillColor: _theme.colorScheme.outline.withValues(alpha: 0.10),
                   ),
-                  initialValue: controller.dropdownValues['supplier'],
+                  value: controller.dropdownValues['supplier'],
                   items: List.generate(
                     5,
                     (index) {

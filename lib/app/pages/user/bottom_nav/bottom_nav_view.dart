@@ -174,51 +174,61 @@ class _BottomNavViewState extends ConsumerState<BottomNavView> {
                   ),
 
                 // Items
-                NavDrawerTileItem(
-                  // title: "Items",
-                  title: t.common.items,
-                  svgIconPath: DAppDrawerIcons.itemList.svgPath,
-                  tileType: NavDrawerTileType.submenu,
-                  submenu: [
-                    // Item List - Always visible for all users
-                    NavDrawerTileItem(
-                      // title: "Item List",
-                      title: t.common.itemsList,
-                      tileType: NavDrawerTileType.bottomNav,
-                      bottomNavIndex: 2,
-                    ),
+                if (ref.canAny([
+                  PMKeys.products,
+                  PMKeys.menus,
+                  PMKeys.categories,
+                  PMKeys.modifierGroups,
+                  PMKeys.itemModifiers,
+                ]))
+                  NavDrawerTileItem(
+                    // title: "Items",
+                    title: t.common.items,
+                    svgIconPath: DAppDrawerIcons.itemList.svgPath,
+                    tileType: NavDrawerTileType.submenu,
+                    submenu: [
+                      // Item Menus
+                      if (ref.can(PMKeys.menus))
+                        NavDrawerTileItem(
+                          // title: "Menus",
+                          title: t.common.menus,
+                          route: MenuListRoute(),
+                        ),
 
-                    // Item Categories - Always visible for all users to review
-                    NavDrawerTileItem(
-                      // title: "Categories",
-                      title: t.common.category,
-                      route: CategoryListRoute(),
-                    ),
+                      // Item Categories
+                      if (ref.can(PMKeys.categories))
+                        NavDrawerTileItem(
+                          // title: "Categories",
+                          title: t.common.category,
+                          route: CategoryListRoute(),
+                        ),
 
-                    // Item Menus - Always visible for all users to review
-                    NavDrawerTileItem(
-                      // title: "Menus",
-                      title: t.common.menus,
-                      route: MenuListRoute(),
-                    ),
+                      // Item List
+                      if (ref.can(PMKeys.products))
+                        NavDrawerTileItem(
+                          // title: "Item List",
+                          title: t.common.itemsList,
+                          tileType: NavDrawerTileType.bottomNav,
+                          bottomNavIndex: 2,
+                        ),
 
-                    // Modifier Groups
-                    if (ref.can(PMKeys.modifierGroups))
-                      NavDrawerTileItem(
-                        // title: "Modifier Groups",
-                        title: t.common.modifierGroups,
-                        route: ModifierGroupListRoute(),
-                      ),
+                      // Modifier Groups
+                      if (ref.can(PMKeys.modifierGroups))
+                        NavDrawerTileItem(
+                          // title: "Modifier Groups",
+                          title: t.common.modifierGroups,
+                          route: ModifierGroupListRoute(),
+                        ),
 
-                    // Item Modifiers
-                    if (ref.can(PMKeys.itemModifiers))
-                      NavDrawerTileItem(
-                        // title: "Item Modifiers",
-                        title: t.common.itemModifiers,
-                        route: ItemModifierListRoute(),
-                      ),
-                  ],
-                ),
+                      // Item Modifiers
+                      if (ref.can(PMKeys.itemModifiers))
+                        NavDrawerTileItem(
+                          // title: "Item Modifiers",
+                          title: t.common.itemModifiers,
+                          route: ItemModifierListRoute(),
+                        ),
+                    ],
+                  ),
 
                 // Table List
                 if (ref.can(PMKeys.tables))

@@ -342,26 +342,27 @@ class _ManageItemViewState extends ConsumerState<ManageItemView> {
                 // Item Type
                 SizedBox(
                   height: 40,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: ItemTypeEnum.values.length,
-                    itemBuilder: (_, index) {
-                      final _itemType = ItemTypeEnum.values[index];
-                      final _isSelected = controller.itemType == _itemType;
+                  child: RadioGroup<ItemTypeEnum>(
+                    groupValue: controller.itemType,
+                    onChanged: controller.handleSelectItemType,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: ItemTypeEnum.values.length,
+                      itemBuilder: (_, index) {
+                        final _itemType = ItemTypeEnum.values[index];
+                        final _isSelected = controller.itemType == _itemType;
 
-                      return InkWell(
-                        onTap: () => controller.handleSelectItemType(_itemType),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Radio<ItemTypeEnum>(
-                              value: _itemType,
-                              groupValue: controller.itemType,
-                              onChanged: controller.handleSelectItemType,
-                              visualDensity: const VisualDensity(
-                                horizontal: VisualDensity.minimumDensity,
-                                vertical: VisualDensity.minimumDensity,
-                              ),
+                        return InkWell(
+                          onTap: () => controller.handleSelectItemType(_itemType),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Radio<ItemTypeEnum>(
+                                value: _itemType,
+                                visualDensity: const VisualDensity(
+                                  horizontal: VisualDensity.minimumDensity,
+                                  vertical: VisualDensity.minimumDensity,
+                                ),
                                 fillColor: WidgetStateColor.resolveWith((states) {
                                   if (states.contains(WidgetState.selected)) {
                                     return _theme.colorScheme.primary;
@@ -387,6 +388,7 @@ class _ManageItemViewState extends ConsumerState<ManageItemView> {
                         return const SizedBox.square(dimension: 8);
                       },
                     ),
+                  ),
                 ),
                 const SizedBox.square(dimension: 12),
 

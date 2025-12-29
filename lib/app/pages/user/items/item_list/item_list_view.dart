@@ -31,122 +31,135 @@ class ItemListView extends ConsumerWidget {
         scaffoldKey: scaffoldKey,
         title: Text(t.common.itemsList),
         actions: [
-          // Navigation Menus - Always show menu with categories and menus for all users
-          PopupMenuButton<PageRouteInfo<dynamic>>(
-            itemBuilder: (context) {
-              return [
-                // Categories and Menus - Always visible for all users to review
-                (t.common.category, const CategoryListRoute()),
-                (t.common.menus, const MenuListRoute()),
-                if (ref.can(PMKeys.modifierGroups)) ...[
-                  (t.common.modifierGroups, const ModifierGroupListRoute()),
-                ],
-                if (ref.can(PMKeys.itemModifiers)) ...[
-                  (t.common.itemModifiers, const ItemModifierListRoute()),
-                ],
-              ].map((menu) {
-                return PopupMenuItem<PageRouteInfo<dynamic>>(
-                  value: menu.$2,
-                  child: Text(menu.$1),
-                );
-              }).toList();
-            },
-            onSelected: context.router.push,
-          ),
+          // Navigation Menus
+          if (ref.canAny([
+            PMKeys.menus,
+            PMKeys.categories,
+            PMKeys.modifierGroups,
+            PMKeys.itemModifiers,
+          ]))
+            PopupMenuButton<PageRouteInfo<dynamic>>(
+              itemBuilder: (context) {
+                return [
+                  if (ref.can(PMKeys.menus)) ...[
+                    (t.common.menus, const MenuListRoute()),
+                  ],
+                  if (ref.can(PMKeys.categories)) ...[
+                    (t.common.category, const CategoryListRoute()),
+                  ],
+                  if (ref.can(PMKeys.modifierGroups)) ...[
+                    (t.common.modifierGroups, const ModifierGroupListRoute()),
+                  ],
+                  if (ref.can(PMKeys.itemModifiers)) ...[
+                    (t.common.itemModifiers, const ItemModifierListRoute()),
+                  ],
+                ].map((menu) {
+                  return PopupMenuItem<PageRouteInfo<dynamic>>(
+                    value: menu.$2,
+                    child: Text(menu.$1),
+                  );
+                }).toList();
+              },
+              onSelected: context.router.push,
+            ),
         ],
       ),
-      body: Column(
-        children: [
-          // Search Field
-          CustomSearchField(
-            controller: controller.searchController,
-            decoration: CustomSearchFieldDecoration(
-              hintText: t.common.searchItemsName,
-            ),
-            appliedFilterCount: controller.filterCount,
-            onTapFilter: () async {
-              final _result = await showItemFilterBottomModalSheet(
-                context: context,
-                selectedFilters: {...controller.filters},
-              );
-              if (_result == null) {
-                return;
-              }
+      body: PermissionGate(
+        moduleKey: PMKeys.products,
+        fallback: PermissionGate.imageFallback(),
+        child: Column(
+          children: [
+            // Search Field
+            CustomSearchField(
+              controller: controller.searchController,
+              decoration: CustomSearchFieldDecoration(
+                hintText: t.common.searchItemsName,
+              ),
+              appliedFilterCount: controller.filterCount,
+              onTapFilter: () async {
+                final _result = await showItemFilterBottomModalSheet(
+                  context: context,
+                  selectedFilters: {...controller.filters},
+                );
+                if (_result == null) {
+                  return;
+                }
 
-              return controller.handleFilter(_result);
-            },
-            onChanged: (_) => Future.delayed(Durations.medium3).whenComplete(
-              controller.pagingController.refresh,
-            ),
-          ).fMarginLTRB(16, 16, 16, 0),
+                return controller.handleFilter(_result);
+              },
+              onChanged: (_) => Future.delayed(Durations.medium3).whenComplete(
+                controller.pagingController.refresh,
+              ),
+            ).fMarginLTRB(16, 16, 16, 0),
 
-          // Items List
-          Expanded(
-            child: RefreshIndicator.adaptive(
-              onRefresh: () => Future.sync(controller.pagingController.refresh),
-              child: PagedListView<int, PItem>(
-                padding: const EdgeInsetsDirectional.only(top: 16, bottom: 72),
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                pagingController: controller.pagingController,
-                builderDelegate: PagedChildBuilderDelegate<PItem>(
-                  itemBuilder: (c, item, i) {
-                    final _itemType = ItemTypeEnum.fromString(item.priceType);
-                    final _itemCardData = ItemCardData(
-                      itemName: item.productName ?? "N/A",
-                      imageUrl: item.images?.firstOrNull?.remote,
-                      salesPrice: (_itemType.isVariation ? item.minVariationPrice : item.salesPrice) ?? 0,
-                    );
+            // Items List
+            Expanded(
+              child: RefreshIndicator.adaptive(
+                onRefresh: () => Future.sync(controller.pagingController.refresh),
+                child: PagedListView<int, PItem>(
+                  padding: const EdgeInsetsDirectional.only(top: 16, bottom: 72),
+                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  pagingController: controller.pagingController,
+                  builderDelegate: PagedChildBuilderDelegate<PItem>(
+                    itemBuilder: (c, item, i) {
+                      final _itemType = ItemTypeEnum.fromString(item.priceType);
+                      final _itemCardData = ItemCardData(
+                        itemName: item.productName ?? "N/A",
+                        imageUrl: item.images?.firstOrNull?.remote,
+                        salesPrice: (_itemType.isVariation ? item.minVariationPrice : item.salesPrice) ?? 0,
+                      );
 
-                    return HorizontalItemCard.itemList(
-                      data: _itemCardData,
-                      action: PopupMenuButton<String>(
-                        itemBuilder: (context) {
-                          return [
-                            (t.common.view, 'view'),
-                            if (ref.can(PMKeys.products, action: PermissionAction.update)) ...[
-                              (t.common.edit, 'edit'),
-                            ],
-                            if (ref.can(PMKeys.products, action: PermissionAction.delete)) ...[
-                              (t.common.delete, 'delete'),
-                            ],
-                          ].map((menu) {
-                            return PopupMenuItem<String>(
-                              value: menu.$2,
-                              child: Text(menu.$1),
-                            );
-                          }).toList();
+                      return HorizontalItemCard.itemList(
+                        data: _itemCardData,
+                        action: PopupMenuButton<String>(
+                          itemBuilder: (context) {
+                            return [
+                              (t.common.view, 'view'),
+                              if (ref.can(PMKeys.products, action: PermissionAction.update)) ...[
+                                (t.common.edit, 'edit'),
+                              ],
+                              if (ref.can(PMKeys.products, action: PermissionAction.delete)) ...[
+                                (t.common.delete, 'delete'),
+                              ],
+                            ].map((menu) {
+                              return PopupMenuItem<String>(
+                                value: menu.$2,
+                                child: Text(menu.$1),
+                              );
+                            }).toList();
+                          },
+                          onSelected: (v) async {
+                            return switch (v) {
+                              'view' => _handleDetailsRoute(context, item.id!),
+                              'edit' => _handleEditRoute(context, ref, item.id!),
+                              'delete' => _handleDelete(
+                                  context,
+                                  () => ref.read(itemsRepoProvider).deleteItem(item.id!),
+                                ),
+                              _ => null,
+                            };
+                          },
+                          child: const Icon(Icons.more_vert),
+                        ),
+                      );
+                    },
+                    noItemsFoundIndicatorBuilder: (context) {
+                      return EmptyWidget(
+                        replaceDefault: false,
+                        emptyBuilder: (context) {
+                          return RetryButtons.scrollView(
+                            t.pages.items.itemList.extra.emptyItem,
+                            onRetry: controller.pagingController.refresh,
+                          );
                         },
-                        onSelected: (v) async {
-                          return switch (v) {
-                            'view' => _handleDetailsRoute(context, item.id!),
-                            'edit' => _handleEditRoute(context, ref, item.id!),
-                            'delete' => _handleDelete(
-                                context,
-                                () => ref.read(itemsRepoProvider).deleteItem(item.id!),
-                              ),
-                            _ => null,
-                          };
-                        },
-                        child: const Icon(Icons.more_vert),
-                      ),
-                    );
-                  },
-                  noItemsFoundIndicatorBuilder: (context) {
-                    return EmptyWidget(
-                      replaceDefault: false,
-                      emptyBuilder: (context) {
-                        return RetryButtons.scrollView(
-                          t.pages.items.itemList.extra.emptyItem,
-                          onRetry: controller.pagingController.refresh,
-                        );
-                      },
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
             )
-          )
-        ],
+          ],
+        ),
       ),
       resizeToAvoidBottomInset: false,
       floatingActionButton: PermissionGate(

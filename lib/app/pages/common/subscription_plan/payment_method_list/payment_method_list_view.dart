@@ -39,25 +39,26 @@ class _PaymentMethodListViewState extends State<PaymentMethodListView> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Text(
-              t.pages.payment.selectPaymentMethod,
-              style: _theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
+        child: RadioGroup<int>(
+          groupValue: selectedMethod,
+          onChanged: (v) => setState(() => selectedMethod = v!),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Text(
+                t.pages.payment.selectPaymentMethod,
+                style: _theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-            const SizedBox.square(dimension: 11),
+              const SizedBox.square(dimension: 11),
 
-            // Payment Method
-            ...paymentTypeList.entries.toList().asMap().entries.map((entry) {
-              return RadioListTile<int>(
-                value: entry.key,
-                groupValue: selectedMethod,
-                onChanged: (v) => setState(() => selectedMethod = v!),
-                controlAffinity: ListTileControlAffinity.trailing,
+              // Payment Method
+              ...paymentTypeList.entries.toList().asMap().entries.map((entry) {
+                return RadioListTile<int>(
+                  value: entry.key,
+                  controlAffinity: ListTileControlAffinity.trailing,
                   tileColor: _theme.colorScheme.primaryContainer,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -86,9 +87,10 @@ class _PaymentMethodListViewState extends State<PaymentMethodListView> {
                       Expanded(child: Text(entry.value.key)),
                     ],
                   ),
-                  ).fMarginOnly(bottom: 10);
-            })
-          ],
+                ).fMarginOnly(bottom: 10);
+              })
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: ElevatedButton(

@@ -8,7 +8,6 @@ Future<void> refreshTopSalesData() async {
 
 /// Provider que obtiene las categorías más populares basándose en la cantidad de productos disponibles
 final topSellingCategoriesProvider = FutureProvider.autoDispose<List<TopSellingCategory>>((ref) async {
-  
   try {
     // 💾 Intentar cargar desde cache persistente primero
     await _loadCacheFromStorage();

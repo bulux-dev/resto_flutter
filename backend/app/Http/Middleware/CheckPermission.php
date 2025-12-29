@@ -11,7 +11,7 @@ class CheckPermission
     {
         $user = Auth::user();
 
-        if ($user->role === 'shop-owner' ) {
+        if ($user->role === 'shop-owner') {
             return $next($request);
         }
 

@@ -28,7 +28,7 @@ class AcnooCategoryController extends Controller
 
         return response()->json([
             'message' => __('Data fetched successfully.'),
-            'data' => $responseData, 
+            'data' => $responseData,
         ]);
     }
 

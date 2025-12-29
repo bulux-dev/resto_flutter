@@ -46,7 +46,7 @@ class User extends Authenticatable
 
     public function hasPermission(string $permission): bool
     {
-        if ($this->role === 'shop-owner' || $this->role === 'staff') return true;
+        if ($this->role === 'shop-owner') return true;
         [$module, $action] = explode('.', $permission);
         return isset($this->visibility[$module][$action]) && $this->visibility[$module][$action] == "1";
     }
