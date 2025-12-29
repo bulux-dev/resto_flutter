@@ -352,6 +352,7 @@ class AcnooSaleController extends Controller
                     'delivery_address:id,name,phone,address',
                     'payment_type:id,name',
                     'kot_ticket:id,table_id',
+                    'kot_ticket.table:id,name',
                     'details:id,sale_id,product_id,variation_id,price,quantities,instructions',
                     'details.product:id,productName,sales_price,price_type,images',
                     'details.variation:id,name,price',
@@ -361,11 +362,15 @@ class AcnooSaleController extends Controller
                 ->findOrFail($id);
 
 
-                // If kot_ticket exists, extract the table_id directly
+                // If kot_ticket exists, extract the table_id and table data directly
                 $responseData = [
                     'table_id' => $sale?->kot_ticket?->table_id,
+                    'kot_ticket' => $sale?->kot_ticket ? [
+                        'id' => $sale->kot_ticket->id,
+                        'table_id' => $sale->kot_ticket->table_id,
+                        'table' => $sale->kot_ticket->table,
+                    ] : null,
                 ] + $sale->toArray();
-                unset($responseData['kot_ticket']);
 
                 return response()->json([
                     'message' => __('Data saved successfully.'),
@@ -488,12 +493,22 @@ class AcnooSaleController extends Controller
 
             DB::commit();
 
+            // If sale has KOT ticket, update its table_id
+            if ($sale->kot_id && $request->table_id) {
+                $kot = KotTicket::find($sale->kot_id);
+                if ($kot) {
+                    // Update the KOT ticket table association
+                    $kot->update(['table_id' => $request->table_id]);
+                }
+            }
+
             $sale->load([
                 'coupon',
                 'tax:id,name,rate',
                 'party:id,name,phone',
                 'payment_type:id,name',
                 'kot_ticket:id,table_id',
+                'kot_ticket.table:id,name',
                 'details:id,sale_id,product_id,variation_id,price,quantities,instructions',
                 'details.product:id,productName,sales_price,price_type,images',
                 'details.variation:id,name,price',
@@ -501,12 +516,15 @@ class AcnooSaleController extends Controller
                 'details.detail_options.modifier_group_option:id,name,price',
             ]);
 
-            // If kot_ticket exists, extract the table_id directly
+            // If kot_ticket exists, include table data in response
             $responseData = [
                 'table_id' => $sale?->kot_ticket?->table_id,
+                'kot_ticket' => $sale?->kot_ticket ? [
+                    'id' => $sale->kot_ticket->id,
+                    'table_id' => $sale->kot_ticket->table_id,
+                    'table' => $sale->kot_ticket->table,
+                ] : null,
             ] + $sale->toArray();
-
-            unset($responseData['kot_ticket']);
 
             return response()->json([
                 'message' => __('Data saved successfully.'),
