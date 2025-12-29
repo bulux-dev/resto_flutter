@@ -242,25 +242,23 @@ class FilterModalData<R, T> {
             ],
 
             // Radio Tiles
-            RadioGroup<T>(
-              groupValue: initialValue,
-              onChanged: onChanged,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: List.generate(items.length, (index) {
-                  return RadioListTile<T>(
-                    controlAffinity: ListTileControlAffinity.trailing,
-                    title: Text(items[index].label),
-                    contentPadding: EdgeInsets.zero,
-                    visualDensity: const VisualDensity(
-                      horizontal: -4,
-                      vertical: -4,
-                    ),
-                    value: items[index].value,
-                  );
-                }),
-              ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: List.generate(items.length, (index) {
+                return RadioListTile<T>(
+                  value: items[index].value,
+                  groupValue: initialValue,
+                  onChanged: onChanged,
+                  controlAffinity: ListTileControlAffinity.trailing,
+                  title: Text(items[index].label),
+                  contentPadding: EdgeInsets.zero,
+                  visualDensity: const VisualDensity(
+                    horizontal: -4,
+                    vertical: -4,
+                  ),
+                );
+              }),
             ),
           ],
         );

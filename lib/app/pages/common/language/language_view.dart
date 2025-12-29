@@ -43,24 +43,23 @@ class _LanguageViewState extends ConsumerState<LanguageView> {
       body: ValueListenableBuilder(
         valueListenable: selectedLocale,
         builder: (_, selected, __) {
-          return RadioGroup<CustomAppLocale>(
-            groupValue: selected,
-            onChanged: (value) => selectedLocale.value = value!,
-            child: ListView.builder(
-              padding: const EdgeInsetsDirectional.symmetric(vertical: 8),
-              itemCount: langProv.supportedLocale.length,
-              itemBuilder: (context, index) {
-                final _item = langProv.supportedLocale[index];
+          return ListView.builder(
+            padding: const EdgeInsetsDirectional.symmetric(vertical: 8),
+            itemCount: langProv.supportedLocale.length,
+            itemBuilder: (context, index) {
+              final _item = langProv.supportedLocale[index];
 
-                return DecoratedBox(
-                  decoration: BoxDecoration(
-                    border: BorderDirectional(
-                      bottom: Divider.createBorderSide(context),
-                    ),
+              return DecoratedBox(
+                decoration: BoxDecoration(
+                  border: BorderDirectional(
+                    bottom: Divider.createBorderSide(context),
                   ),
-                  child: RadioListTile<CustomAppLocale>(
-                    value: _item,
-                    controlAffinity: ListTileControlAffinity.trailing,
+                ),
+                child: RadioListTile<CustomAppLocale>(
+                  value: _item,
+                  groupValue: selected,
+                  onChanged: (value) => selectedLocale.value = value!,
+                  controlAffinity: ListTileControlAffinity.trailing,
                     title: Row(
                       children: [
                         SizedBox.square(
@@ -88,7 +87,6 @@ class _LanguageViewState extends ConsumerState<LanguageView> {
                   ),
                 );
               },
-            ),
           );
         },
       ),

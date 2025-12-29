@@ -27,7 +27,7 @@ class DataManager implements Scope
         $user = Auth::user();
 
         // Check static permission name
-        if (!$user->hasPermission($this->permissionName) && $user->role != 'shop-owner') {
+        if (!$user->hasPermission($this->permissionName) (&& $user->role != 'shop-owner' )) {
             $builder->where($model->getTable() . '.' . $this->fieldName, $user->id);
         }
     }

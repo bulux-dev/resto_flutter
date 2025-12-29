@@ -17,8 +17,11 @@ class AcnooProductController extends Controller
 
     public function index()
     {
+        // Return all products for the authenticated user's business (no user_id filtering)
+        $businessId = auth()->user()->business_id;
+
         $data = Product::with('menu:id,name', 'category:id,categoryName', 'variations:product_id,id,price')
-                ->where('business_id', auth()->user()->business_id)
+                ->where('business_id', $businessId)
                 ->when(request('search'), function ($query) {
                     $query->where('productName', 'like', '%' . request('search') . '%');
                 })
@@ -39,9 +42,10 @@ class AcnooProductController extends Controller
                     }
                 })
                 ->latest();
+
                 if (request('no_paginate') && request('no_paginate') == true) {
                     $data = Product::select('id', 'business_id', 'productName', 'category_id')
-                            ->where('business_id', auth()->user()->business_id)
+                            ->where('business_id', $businessId)
                             ->get();
                     $responseData = [
                         'data' => $data,
@@ -124,16 +128,15 @@ class AcnooProductController extends Controller
 
     public function show(string $id)
     {
+        $businessId = auth()->user()->business_id;
+
         $data = Product::with('menu:id,name',
                         'category:id,categoryName',
                         'variations:product_id,id,name,price',
                         'modifiers:id,product_id,modifier_group_id,is_required,is_multiple',
                         'modifiers.modifier_group:id,name',
                         'modifiers.modifier_group.modifier_group_option:id,modifier_group_id,is_available,name,price')
-<<<<<<< HEAD
-=======
-                        ->where('business_id', auth()->user()->business_id)
->>>>>>> parent of e6fa8c1 (changes pending)
+                        ->where('business_id', $businessId)
                         ->findOrFail($id);
 
         return response()->json([
@@ -144,6 +147,13 @@ class AcnooProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
+        // Ensure the product belongs to the user's business
+        if ($product->business_id != auth()->user()->business_id) {
+            return response()->json([
+                'message' => __('Unauthorized.'),
+            ], 403);
+        }
+
         $business_id = auth()->user()->business_id;
 
         $request->validate([
@@ -228,6 +238,13 @@ class AcnooProductController extends Controller
 
     public function destroy(Product $product)
     {
+        // Ensure the product belongs to the user's business
+        if ($product->business_id != auth()->user()->business_id) {
+            return response()->json([
+                'message' => __('Unauthorized.'),
+            ], 403);
+        }
+
         foreach ($product->images ?? [] as $image) {
             if (Storage::exists($image)) {
                 Storage::delete($image);

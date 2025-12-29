@@ -44,7 +44,7 @@
 
                 </div>
                 <div class="d-flex align-items-center justify-content-center h-100 ">
-                    @if (auth()->user()->role == 'superadmin')
+                    @if (auth()->user()->role == 'superadmin', 'admin' || auth()->user()->role == 'staff' || auth()->user()->role == 'Staff' || auth()->user()->role == 'STAFF')
 
                         <div class="custom-notification-wrapper">
                         <a href="#" class="custom-notification-toggle" id="customNotificationToggle">

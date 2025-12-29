@@ -22,14 +22,14 @@ class ItemListViewNotifier extends _ItemListViewMixer {
 
   @override
   Future<PaginatedListModel<PItem>> fetchData(int page) {
-    // Fetch all products regardless of user_id or role
-    // noPaging: true ensures all items are loaded without pagination
     return repo.getItemList(
       page: page,
       search: searchController.text,
       categoryId: filters[ItemFilterType.category],
       sortBy: filters[ItemFilterType.price],
-      noPaging: true,
+      // COMENTADO: foodType eliminado del filtro por no funcionar correctamente
+      // foodType:
+      //     (filters[ItemFilterType.foodType] as ItemFoodTypeEnum?)?.stringValue,
     );
   }
 

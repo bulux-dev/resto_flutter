@@ -22,7 +22,7 @@ class RoleController extends Controller
 
     public function index()
     {
-        $roles = Role::with('users')->whereNotIn('name', ['Super Admin', 'superadmin', 'super admin'])->withCount('users')->get();
+        $roles = Role::with('users')->whereNotIn('name', ['Super Admin', 'superadmin', 'super admin', 'staff','Staff','STAFF'])->withCount('users')->get();
         return view('admin.roles.index', compact('roles'));
     }
 
