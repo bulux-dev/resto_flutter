@@ -18,8 +18,8 @@ class AcnooSaleController extends Controller
 {
     public function index()
     {
-        $data = Sale::select('id', 'party_id', 'payment_type_id', 'invoiceNumber', 'saleDate', 'totalAmount', 'paidAmount', 'dueAmount', 'status')
-                ->with('party:id,name,phone', 'payment_type:id,name')
+        $data = Sale::select('id', 'party_id', 'payment_type_id', 'invoiceNumber', 'saleDate', 'totalAmount', 'paidAmount', 'dueAmount', 'status', 'kot_id')
+                ->with('party:id,name,phone', 'payment_type:id,name', 'kot_ticket.table:id,name')
                 ->when(request('search'), function ($query) {
                     $query->where(function ($subQuery) {
                         $subQuery->where('invoiceNumber', 'like', '%' . request('search') . '%')

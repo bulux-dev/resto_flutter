@@ -85,6 +85,30 @@ Route::prefix('v1')->group(function () {
             ]);
         });
 
+        // Debug route to check sales visibility
+        Route::get('debug/sales', function () {
+            $user = auth()->user();
+            if (!$user) {
+                return response()->json(['error' => 'Not authenticated'], 401);
+            }
+            
+            $allSales = \App\Models\Sale::all(['id', 'invoiceNumber', 'user_id', 'business_id', 'created_at']);
+            $userBizSales = \App\Models\Sale::where('business_id', $user->business_id)->get(['id', 'invoiceNumber', 'user_id', 'business_id', 'created_at']);
+            
+            return response()->json([
+                'authenticated_user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'business_id' => $user->business_id,
+                    'role' => $user->role,
+                ],
+                'all_sales_count' => $allSales->count(),
+                'business_sales_count' => $userBizSales->count(),
+                'all_sales' => $allSales,
+                'business_sales' => $userBizSales,
+            ]);
+        });
+
         // Reports
         Route::get('purchase-report', [Api\ReportsController::class, 'purchaseReport']);
         Route::get('sales-report', [Api\ReportsController::class, 'salesReport']);
