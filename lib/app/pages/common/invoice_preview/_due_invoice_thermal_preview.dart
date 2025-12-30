@@ -51,19 +51,19 @@ class DueInvoiceThermalInvoicePreview extends ConsumerWidget {
               const SizedBox.square(dimension: 4),
 
               // Store Phone
-              Text(
-                // 'Mobile: ${_data.user?.business?.phoneNumber ?? 'N/A'}',
-                '${t.common.mobile}: ${_data.user?.business?.phoneNumber ?? 'N/A'}',
-                style: _theme.textTheme.bodyLarge,
-              ),
-              const SizedBox.square(dimension: 4),
+              // Text(
+              //   // 'Mobile: ${_data.user?.business?.phoneNumber ?? 'N/A'}',
+              //   '${t.common.mobile}: ${_data.user?.business?.phoneNumber ?? 'N/A'}',
+              //   style: _theme.textTheme.bodyLarge,
+              // ),
+              // const SizedBox.square(dimension: 4),
 
               // Store Email
-              Text(
-                // 'Email: ${_data.user?.email ?? 'N/A'}',
-                '${t.common.email}: ${_data.user?.email ?? 'N/A'}',
-                style: _theme.textTheme.bodyLarge,
-              ),
+              // Text(
+              //   // 'Email: ${_data.user?.email ?? 'N/A'}',
+              //   '${t.common.email}: ${_data.user?.email ?? 'N/A'}',
+              //   style: _theme.textTheme.bodyLarge,
+              // ),
               const SizedBox.square(dimension: 16),
             ],
           ),
