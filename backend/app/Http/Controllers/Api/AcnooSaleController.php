@@ -53,6 +53,19 @@ class AcnooSaleController extends Controller
                 ->latest()
                 ->paginate(10);
 
+        // Ensure each sale item includes kot_ticket and table_id in the response
+        $data->getCollection()->transform(function ($sale) {
+            $saleArray = $sale->toArray();
+            $saleArray['table_id'] = $sale?->kot_ticket?->table_id;
+            $saleArray['kot_ticket'] = $sale?->kot_ticket ? [
+                'id' => $sale->kot_ticket->id,
+                'table_id' => $sale->kot_ticket->table_id,
+                'table' => $sale->kot_ticket->table,
+            ] : null;
+
+            return $saleArray;
+        });
+
         return response()->json([
             'message' => __('Data fetched successfully.'),
             'data' => $data,

@@ -85,19 +85,19 @@ class SalePurchaseInvoiceTemplate extends PDFTemplateBase {
               pw.SizedBox.square(dimension: 2),
 
               // Store Phone
-              pw.Text(
-                "Mobile: ${data.user?.business?.phoneNumber ?? 'N/A'}",
-                textAlign: pw.TextAlign.center,
-                style: pw.TextStyle(fontSize: 16),
-              ),
+              // pw.Text(
+              //   "Mobile: ${data.user?.business?.phoneNumber ?? 'N/A'}",
+              //   textAlign: pw.TextAlign.center,
+              //   style: pw.TextStyle(fontSize: 16),
+              // ),
               pw.SizedBox.square(dimension: 2),
 
               // Store Email
-              pw.Text(
-                "Email: ${data.user?.email ?? 'N/A'}",
-                textAlign: pw.TextAlign.center,
-                style: pw.TextStyle(fontSize: 16),
-              ),
+              // pw.Text(
+              //   "Email: ${data.user?.email ?? 'N/A'}",
+              //   textAlign: pw.TextAlign.center,
+              //   style: pw.TextStyle(fontSize: 16),
+              // ),
               pw.SizedBox.square(dimension: 2),
             ],
           ),
