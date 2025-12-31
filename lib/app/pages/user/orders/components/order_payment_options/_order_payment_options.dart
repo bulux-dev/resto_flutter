@@ -182,25 +182,25 @@ abstract class PaymentOptionWidgetBase extends ConsumerWidget {
           ],
 
           // VAT
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  // "VAT ${controller.vatPercent}%",
-                  "${controller.vatOnSale?.name ?? t.common.vat} ${controller.vatPercent}%",
-                  style: _titleStyle,
-                ),
-              ),
-              Expanded(
-                child: Text(
-                  controller.vatAmount.quickCurrency(),
-                  textAlign: TextAlign.end,
-                  style: _titleStyle,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox.square(dimension: 10),
+          // Row(
+          //   children: [
+          //     Expanded(
+          //       child: Text(
+          //         // "VAT ${controller.vatPercent}%",
+          //         "${controller.vatOnSale?.name ?? t.common.vat} ${controller.vatPercent}%",
+          //         style: _titleStyle,
+          //       ),
+          //     ),
+          //     Expanded(
+          //       child: Text(
+          //         controller.vatAmount.quickCurrency(),
+          //         textAlign: TextAlign.end,
+          //         style: _titleStyle,
+          //       ),
+          //     ),
+          //   ],
+          // ),
+          // const SizedBox.square(dimension: 10),
 
           // Delivery Charge
           if (controller.deliveryCharge > 0) ...[
