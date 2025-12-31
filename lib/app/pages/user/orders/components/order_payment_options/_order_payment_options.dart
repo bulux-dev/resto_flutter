@@ -118,68 +118,68 @@ abstract class PaymentOptionWidgetBase extends ConsumerWidget {
           const SizedBox.square(dimension: 10),
 
           // Discount
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  // 'Discount ${controller.discountAmount.quickCurrency()}',
-                  '${t.common.discount} ${controller.discountAmount.quickCurrency()}',
-                  style: _titleStyle,
-                ),
-              ),
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: 105,
-                  minWidth: 75,
-                ),
-                child: RateSelectorFormField(
-                  showModifierSelector: false,
-                  baseAmount: controller.itemSubtotal,
-                  selectedModifier: RateModifierData(type: RateModifierEnum.percent),
-                  controller: controller.discountController,
-                  onChanged: (_) {},
-                ),
-              )
-            ],
-          ),
-          const SizedBox.square(dimension: 10),
+          // Row(
+          //   children: [
+          //     Expanded(
+          //       child: Text(
+          //         // 'Discount ${controller.discountAmount.quickCurrency()}',
+          //         '${t.common.discount} ${controller.discountAmount.quickCurrency()}',
+          //         style: _titleStyle,
+          //       ),
+          //     ),
+          //     ConstrainedBox(
+          //       constraints: BoxConstraints(
+          //         maxWidth: 105,
+          //         minWidth: 75,
+          //       ),
+          //       child: RateSelectorFormField(
+          //         showModifierSelector: false,
+          //         baseAmount: controller.itemSubtotal,
+          //         selectedModifier: RateModifierData(type: RateModifierEnum.percent),
+          //         controller: controller.discountController,
+          //         onChanged: (_) {},
+          //       ),
+          //     )
+          //   ],
+          // ),
+          // const SizedBox.square(dimension: 10),
 
           // Coupon
-          if (controller.coupon != null) ...[
-            Row(
-              children: [
-                Expanded(
-                  child: Text.rich(
-                    TextSpan(
-                      // text: "Coupon ${controller.couponDiscount.couponPercent.commaSeparated()}% ",
-                      text: "${t.common.coupon} ${controller.couponDiscount.couponPercent.commaSeparated()}% ",
-                      children: [
-                        WidgetSpan(
-                          alignment: PlaceholderAlignment.middle,
-                          child: InkWell(
-                            onTap: () => controller.setCoupon(null),
-                            child: const Icon(
-                              Icons.close,
-                              color: Colors.red,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                    style: _titleStyle,
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    controller.couponDiscount.couponAmount.quickCurrency(),
-                    textAlign: TextAlign.end,
-                    style: _titleStyle,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox.square(dimension: 10),
-          ],
+          // if (controller.coupon != null) ...[
+          //   Row(
+          //     children: [
+          //       Expanded(
+          //         child: Text.rich(
+          //           TextSpan(
+          //             // text: "Coupon ${controller.couponDiscount.couponPercent.commaSeparated()}% ",
+          //             text: "${t.common.coupon} ${controller.couponDiscount.couponPercent.commaSeparated()}% ",
+          //             children: [
+          //               WidgetSpan(
+          //                 alignment: PlaceholderAlignment.middle,
+          //                 child: InkWell(
+          //                   onTap: () => controller.setCoupon(null),
+          //                   child: const Icon(
+          //                     Icons.close,
+          //                     color: Colors.red,
+          //                   ),
+          //                 ),
+          //               )
+          //             ],
+          //           ),
+          //           style: _titleStyle,
+          //         ),
+          //       ),
+          //       Expanded(
+          //         child: Text(
+          //           controller.couponDiscount.couponAmount.quickCurrency(),
+          //           textAlign: TextAlign.end,
+          //           style: _titleStyle,
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          //   const SizedBox.square(dimension: 10),
+          // ],
 
           // VAT
           // Row(
@@ -281,7 +281,7 @@ abstract class PaymentOptionWidgetBase extends ConsumerWidget {
                       if (!controller.showTipField) {
                         controller.tipAmount = 0;
                       } else {
-                        controller.tipAmount = (controller.itemSubtotal * 0.10).toDouble();
+                        controller.tipAmount = (controller.itemSubtotal * 0.10).roundToDouble();
                       }
                       controller.notifyListeners();
                     },
@@ -299,7 +299,7 @@ abstract class PaymentOptionWidgetBase extends ConsumerWidget {
                       onChanged: (value) {
                         controller.toggleShowTipField(value);
                         if (value == true) {
-                          controller.tipAmount = (controller.itemSubtotal * 0.10).toDouble();
+                          controller.tipAmount = (controller.itemSubtotal * 0.10).roundToDouble();
                         } else {
                           controller.tipAmount = 0;
                         }
@@ -456,7 +456,7 @@ abstract class PaymentOptionWidgetBaseNotifier extends ChangeNotifier {
     if (!showTipField) {
       tipAmount = 0;
     } else {
-      tipAmount = (itemSubtotal * 0.10).toDouble();
+      tipAmount = (itemSubtotal * 0.10).roundToDouble();
     }
     notifyListeners();
   }
