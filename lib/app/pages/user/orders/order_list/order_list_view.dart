@@ -21,14 +21,9 @@ class OrderListView extends ConsumerWidget {
     return Scaffold(
       appBar: CustomAppBar(
         scaffoldKey: scaffoldKey,
-        // title: const Text('Order List'),
         title: Text(t.pages.orderList.title),
       ),
-      body: PermissionGate(
-        moduleKey: PMKeys.sales,
-        fallback: PermissionGate.imageFallback(),
-        child: const OrderListWidget(),
-      ),
+      body: const OrderListWidget(),
       resizeToAvoidBottomInset: false,
     ).unfocusPrimary();
   }
