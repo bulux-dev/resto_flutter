@@ -274,9 +274,17 @@ abstract class PaymentOptionWidgetBase extends ConsumerWidget {
             TextSpan(
               children: [
                 TextSpan(
-                  // text: 'Add Tip  ',
-                  text: '${t.common.addTip}  ',
-                  recognizer: TapGestureRecognizer()..onTap = controller.toggleShowTipField,
+                  text: '${t.common.addTip} (10%) ',
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      controller.toggleShowTipField();
+                      if (!controller.showTipField) {
+                        controller.tipAmount = 0;
+                      } else {
+                        controller.tipAmount = (controller.itemSubtotal * 0.10).toDouble();
+                      }
+                      controller.notifyListeners();
+                    },
                   style: _theme.textTheme.bodyMedium?.copyWith(
                     color: _theme.colorScheme.primary,
                     fontWeight: FontWeight.w600,
@@ -288,23 +296,21 @@ abstract class PaymentOptionWidgetBase extends ConsumerWidget {
                     dimension: 16,
                     child: Checkbox(
                       value: controller.showTipField,
-                      onChanged: controller.toggleShowTipField,
+                      onChanged: (value) {
+                        controller.toggleShowTipField(value);
+                        if (value == true) {
+                          controller.tipAmount = (controller.itemSubtotal * 0.10).toDouble();
+                        } else {
+                          controller.tipAmount = 0;
+                        }
+                        controller.notifyListeners();
+                      },
                     ),
                   ).fMarginOnly(right: 6),
                 ),
               ],
             ),
           ),
-          if (controller.showTipField) ...[
-            const SizedBox.square(dimension: 8),
-            NumberFormField(
-              controller: controller.tipAmountController,
-              decoration: InputDecoration(
-                // hintText: 'Ex: \$10',
-                hintText: t.form.income.payment.hint,
-              ),
-            ),
-          ],
           const SizedBox.square(dimension: 16),
         ],
       );
@@ -449,14 +455,9 @@ abstract class PaymentOptionWidgetBaseNotifier extends ChangeNotifier {
     showTipField = value ?? !showTipField;
     if (!showTipField) {
       tipAmount = 0;
-      tipAmountController.clear();
+    } else {
+      tipAmount = (itemSubtotal * 0.10).toDouble();
     }
-    notifyListeners();
-  }
-
-  late final tipAmountController = TextEditingController()..addListener(_setTipAmount);
-  void _setTipAmount() {
-    tipAmount = (tipAmountController.getNumber ?? 0);
     notifyListeners();
   }
 
@@ -492,7 +493,7 @@ abstract class PaymentOptionWidgetBaseNotifier extends ChangeNotifier {
 
     // Set Tip
     showTipField = sale.meta?.tip != null && sale.meta!.tip! > 0;
-    tipAmountController.text = sale.meta?.tip?.toString() ?? '';
+  //  tipAmountController.text = sale.meta?.tip?.toString() ?? '';
 
     // Set Discount
     discountController.text = sale.discountPercentage?.toFixedDecimal().toString() ?? '';
